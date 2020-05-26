@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.ProjectModel;
 using Microsoft.VisualStudio.Web.CodeGeneration.DotNet;
@@ -13,11 +12,7 @@ namespace Microsoft.VisualStudio.Web.CodeGeneration
 {
     public class DefaultCodeGeneratorAssemblyProvider : ICodeGeneratorAssemblyProvider
     {
-        private static readonly HashSet<string> _codeGenerationFrameworkAssemblies =
-            new HashSet<string>(StringComparer.Ordinal)
-            {
-                "Microsoft.VisualStudio.Web.CodeGeneration",
-            };
+        private const string _codeGeneratorAssembly = "Microsoft.VisualStudio.Web.CodeGenerators.Mvc";
         private static readonly HashSet<string> _exclusions =
             new HashSet<string>(StringComparer.Ordinal)
             {
@@ -44,16 +39,12 @@ namespace Microsoft.VisualStudio.Web.CodeGeneration
 
         }
 
-        public IEnumerable<Assembly> CandidateAssemblies
+        public Assembly CandidateAssembly
         {
             get
             {
-
-                var list = _codeGenerationFrameworkAssemblies
-                    .SelectMany(_projectContext.GetReferencingPackages)
-                    .Distinct()
-                    .Where(IsCandidateLibrary);
-                return list.Select(lib => _assemblyLoadContext.LoadFromName(new AssemblyName(lib.Name)));
+                var assembly = _projectContext.GetPackage(_codeGeneratorAssembly);
+                return IsCandidateLibrary(assembly) ? _assemblyLoadContext.LoadFromName(new AssemblyName(assembly.Name)) : null;
             }
         }
 
