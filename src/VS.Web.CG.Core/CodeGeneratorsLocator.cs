@@ -70,14 +70,13 @@ namespace Microsoft.VisualStudio.Web.CodeGeneration
             {
                 var descriptors = new List<CodeGeneratorDescriptor>();
 
-                foreach (var assembly in _assemblyProvider.CandidateAssemblies)
+                if (_assemblyProvider.CandidateAssembly != null &&_assemblyProvider.CandidateAssembly is Assembly assembly)
                 {
                     descriptors.AddRange(assembly
                         .DefinedTypes
                         .Where(IsCodeGenerator)
                         .Select(typeInfo => DescriptorFromTypeInfo(typeInfo)));
                 }
-
                 return descriptors;
             }
         }

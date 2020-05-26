@@ -8,6 +8,6 @@ namespace Microsoft.VisualStudio.Web.CodeGeneration
 {
     public interface ICodeGeneratorAssemblyProvider
     {
-        IEnumerable<Assembly> CandidateAssemblies { get; }
+        Assembly CandidateAssembly { get; }
     }
 }
