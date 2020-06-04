@@ -43,14 +43,13 @@ namespace Microsoft.VisualStudio.Web.CodeGeneration
         {
             get
             {
-                var assembly = _projectContext.GetPackage(_codeGeneratorAssembly);
-                return IsCandidateLibrary(assembly) ? _assemblyLoadContext.LoadFromName(new AssemblyName(assembly.Name)) : null;
+                return IsCandidateLibrary(_codeGeneratorAssembly) && (_projectContext.GetAssembly(_codeGeneratorAssembly) != null) ? _assemblyLoadContext.LoadFromName(new AssemblyName(_codeGeneratorAssembly)) : null;
             }
         }
 
-        private bool IsCandidateLibrary(DependencyDescription library)
+        private bool IsCandidateLibrary(string assembly)
         {
-            return !_exclusions.Contains(library.Name);
+            return !_exclusions.Contains(assembly);
         }
     }
 }

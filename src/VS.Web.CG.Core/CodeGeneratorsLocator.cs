@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -69,7 +70,7 @@ namespace Microsoft.VisualStudio.Web.CodeGeneration
             get
             {
                 var descriptors = new List<CodeGeneratorDescriptor>();
-
+                Debugger.Launch();
                 if (_assemblyProvider.CandidateAssembly != null &&_assemblyProvider.CandidateAssembly is Assembly assembly)
                 {
                     descriptors.AddRange(assembly

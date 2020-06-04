@@ -36,9 +36,12 @@ namespace Microsoft.VisualStudio.Web.CodeGeneration.Core.Test
 
             Mock<Assembly> currentAssembly = new Mock<Assembly>();
             currentAssembly.Setup(c => c.DefinedTypes).Returns(typeList);
+
              mockAssemblyProvider
                 .SetupGet(ap => ap.CandidateAssembly)
                 .Returns(currentAssembly.Object);
+#endif
+
         }
 
         [Fact]

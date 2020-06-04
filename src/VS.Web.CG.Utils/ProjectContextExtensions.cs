@@ -17,5 +17,13 @@ namespace Microsoft.VisualStudio.Web.CodeGeneration.Utils
 
             return context.PackageDependencies.FirstOrDefault(package => package.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
+
+        public static ResolvedReference GetAssembly(this IProjectContext context, string name)
+        {
+            Requires.NotNullOrEmpty(name, nameof(name));
+            Requires.NotNull(context, nameof(context));
+            string assemblyName = string.Concat(name, ".dll");
+            return context.CompilationAssemblies.FirstOrDefault(assembly => assembly.Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase));
+        }
     }
 }
