@@ -1,4 +1,4 @@
-﻿@inherits Microsoft.VisualStudio.Web.CodeGeneration.Templating.RazorTemplateBase
+@inherits Microsoft.VisualStudio.Web.CodeGeneration.Templating.RazorTemplateBase
 @using Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore
 @using System.Collections.Generic
 @using System.Linq
@@ -18,7 +18,6 @@
         }
 @:}
 @:
-@:<h1>@Model.ViewName</h1>
 @:
     }
     else
@@ -38,95 +37,122 @@
 @:
         //    PushIndent("    ");
     }
-@:<h4>@Model.ViewDataTypeShortName</h4>
-@:<hr />
-@:<div class="row">
-    @:<div class="col-md-4">
-        @:<form asp-action="@Model.ViewName">
-            @:<div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        foreach (PropertyMetadata property in Model.ModelMetadata.Properties)
-        {
-            if (property.IsPrimaryKey)
+}
+
+<div class="box">
+    <div class="box-header with-border">
+        <h2 class="box-title">@@Localization.@(Model.ViewDataTypeShortName).Edit @@Localization.@(Model.ViewDataTypeShortName).Title</h2>
+        <span class="pull-right no-margin">
+        @{
+            string pkName = GetPrimaryKeyName();
+            if (pkName != null)
             {
-            @:<input type="hidden" asp-for="@property.PropertyName" />
-                continue;
+            @:<a class="btn btn-danger" href="@@Url.Action("Delete", new { id = @@Model.@pkName })">@@Localization.@(Model.ViewDataTypeShortName).Delete</a>
+            @:<sep>|</sep>
+            @:<a class="btn btn-success" href="@@Url.Action("Index")">@@Localization.@(Model.ViewDataTypeShortName).Back</a>
             }
-
-            if (property.Scaffold)
+            else
             {
-                if (property.IsReadOnly)
-                {
-                    continue;
-                }
-
-                if (property.IsForeignKey)
-                {
-            @:<div class="form-group">
-                @:<label asp-for="@property.PropertyName" class="control-label"></label>
-                @:<select asp-for="@property.PropertyName" class="form-control" asp-items="ViewBag.@property.PropertyName"></select>
-                @:<span asp-validation-for="@property.PropertyName" class="text-danger"></span>
-            @:</div>
-                    continue;
-                }
-
-                bool isCheckbox = property.TypeName.Equals("System.Boolean");
-                if (isCheckbox)
-                {
-            @:<div class="form-group form-check">
-                @:<label class="form-check-label">
-                    @:<input class="form-check-input" asp-for="@property.PropertyName" /> @@Html.DisplayNameFor(model => model.@GetValueExpression(property))
-                @:</label>
-            @:</div>
-                }
-                else if (property.IsEnum && !property.IsEnumFlags)
-                {
-            @:<div class="form-group">
-                @:<label asp-for="@property.PropertyName" class="control-label"></label>
-                @:<select asp-for="@property.PropertyName" class="form-control"></select>
-                @:<span asp-validation-for="@property.PropertyName" class="text-danger"></span>
-            @:</div>
-                }
-                else if (property.IsMultilineText)
-                {
-            @:<div class="form-group">
-                @:<label asp-for="@property.PropertyName" class="control-label"></label>
-                @:<textarea asp-for="@property.PropertyName" class="form-control"></textarea>
-                @:<span asp-validation-for="@property.PropertyName" class="text-danger"></span>
-            @:</div>
-                }
-                else
-                {
-            @:<div class="form-group">
-                @:<label asp-for="@property.PropertyName" class="control-label"></label>
-                @:<input asp-for="@property.PropertyName" class="form-control" />
-                @:<span asp-validation-for="@property.PropertyName" class="text-danger"></span>
-            @:</div>
-                }
-            }
-            // Ideally we shouldn't be here  but if the user marks the foreign key as [ScaffoldColumn(false)], we want to atleast try to make it work.
-            else if (property.IsForeignKey)
-            {
-        @:<input type="hidden" asp-for="@property.PropertyName" />
-                continue;
+            @:<a class="btn btn-danger" href="@@Url.Action("Delete", new { /* id = @@Model.PrimaryKey */ })">@@Localization.@(Model.ViewDataTypeShortName).Delete</a>
+            @:<sep>|</sep>
+            @:<a class="btn btn-success" href="@@Url.Action("Index")">@@Localization.@(Model.ViewDataTypeShortName).Back</a>
             }
         }
-    }
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </span>
     </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        @@using (Html.BeginForm()) 
+        {
+            @@Html.AntiForgeryToken()
+    
+            <div class="form-horizontal">
+                @@Html.ValidationSummary(true, "", new { @@class = "text-danger" })
+
+                @foreach (var property in Model.ModelMetadata.Properties)
+                {
+                    if (property.IsPrimaryKey)
+                    {
+                    @:@@Html.HiddenFor(model => model.@property.PropertyName)
+                        continue;
+                    }
+
+                    if (property.Scaffold)
+                    {
+                        if (property.IsReadOnly)
+                        {
+                            continue;
+                        }
+
+                        if (property.IsForeignKey)
+                        {
+                @:<div class="form-group">
+                    @:@@Html.LabelFor(model => model.@property.PropertyName, @@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property), htmlAttributes: new { @@class = "control-label" })
+                    @:@@Html.DropDownList("@property.PropertyName", null, htmlAttributes: new { @@class = "form-control" })
+                    @:@@Html.ValidationMessageFor(model => model.@property.PropertyName, "", new { @@class = "text-danger" })
+                @:</div>
+                            continue;
+                        }
+
+                        bool isCheckbox = property.TypeName.Equals("System.Boolean");
+                        if (isCheckbox)
+                        {
+                @:<div class="form-group">
+                    @:<div class="checkbox">
+                        @:<label>
+                            @:@@Html.CheckBoxFor(model => model.@property.PropertyName)
+                            @:@@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property)
+                        @:</label>
+                    @:</div>
+                @:</div>
+                        }
+                        else if (property.IsEnum && !property.IsEnumFlags)
+                        {
+                @:<div class="form-group">
+                    @:@@Html.LabelFor(model => model.@property.PropertyName, @@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property), htmlAttributes: new { @@class = "control-label" })
+                    @:@@Html.EnumDropDownListFor(model => model.@property.PropertyName, htmlAttributes: new { @@class = "form-control" })
+                    @:@@Html.ValidationMessageFor(model => model.@property.PropertyName, "", new { @@class = "text-danger" })
+                @:</div>
+                        }
+                        else if (property.IsMultilineText)
+                        {
+                @:<div class="form-group">
+                    @:@@Html.LabelFor(model => model.@property.PropertyName, @@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property), htmlAttributes: new { @@class = "control-label" })
+                    @:@@Html.TextAreaFor(model => model.@property.PropertyName, new { htmlAttributes = new { @@class = "form-control" } })
+                    @:@@Html.ValidationMessageFor(model => model.@property.PropertyName, "", new { @@class = "text-danger" })
+                @:</div>
+                        }
+                        else
+                        {
+                @:<div class="form-group">
+                    @:@@Html.LabelFor(model => model.@property.PropertyName, @@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property), htmlAttributes: new { @@class = "control-label" })
+                    @:@@Html.EditorFor(model => model.@property.PropertyName, new { htmlAttributes = new { @@class = "form-control" } })
+                    @:@@Html.ValidationMessageFor(model => model.@property.PropertyName, "", new { @@class = "text-danger" })
+                @:</div>
+                        }
+                    }
+                    else
+                    {
+                @:@@Html.HiddenFor("@property.PropertyName")
+                        continue;
+                    }
+                }
+
+                <div class="form-group">
+                    <input type="submit" value="@("@Localization."+Model.ViewDataTypeShortName+".Save")" class="btn btn-default" />
+                </div>
+            </div>
+        }
+    </div>
+<!-- /.box-body -->
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @{
     if (Model.ReferenceScriptLibraries)
     {
 @:@@section Scripts {
-    @:@@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @:@@Scripts.Render("~/bundles/jqueryval")
 @:}
     }
     // The following code closes the tag used in the case of a view using a layout page and the body and html tags in the case of a regular view page
@@ -138,14 +164,27 @@
 }
 @functions
 {
-    string GetAssociationName(IPropertyMetadata property)
+    string GetPrimaryKeyName()
     {
-        //Todo: Implement properly.
-        return property.PropertyName;
+        return (Model.ModelMetadata.PrimaryKeys != null && Model.ModelMetadata.PrimaryKeys.Length == 1)
+        ? Model.ModelMetadata.PrimaryKeys[0].PropertyName
+        : null;
+    }
+
+    // Do we need to use this in conjunction with the PrimaryKey check?
+    bool IsPropertyGuid(IPropertyMetadata property)
+    {
+        return string.Equals("System.Guid", property.TypeName, StringComparison.OrdinalIgnoreCase);
     }
 
     string GetValueExpression(IPropertyMetadata property)
     {
+        return property.PropertyName;
+    }
+
+    string GetAssociationName(IPropertyMetadata property)
+    {
+        //Todo: Implement properly.
         return property.PropertyName;
     }
 }

@@ -14,6 +14,7 @@
   <!-- workaround for https://github.com/dotnet/sdk/issues/2698 -->
   <PropertyGroup>
     <Version>$(PackageVersion)</Version>
+    <Authors>Microsoft, BSS-ONE</Authors>
   </PropertyGroup>
 
   <ItemGroup>

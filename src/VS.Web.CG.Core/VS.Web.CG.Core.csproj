@@ -8,6 +8,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <PackageTags>aspnetcore;codegenerator;scaffolding;visualstudioweb</PackageTags>
+    <Company>Microsoft Corporation</Company>
+    <Authors>Microsoft, BSS-ONE</Authors>
   </PropertyGroup>
 
   <ItemGroup>

@@ -25,7 +25,8 @@ namespace Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Controller
             "Edit",
             "Details",
             "Delete",
-            "List"
+            "List",
+            "_Grid"
         };
 
         public ControllerWithContextGenerator(
