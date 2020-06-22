@@ -21,7 +21,7 @@
             }
             else if (navigationLookup.TryGetValue(item.Name, out INavigationMetadata navigation))
             {
-        @:columns.Add(model => model.@GetValueExpression(navigation)).Titled(Localization.@(Model.ViewDataTypeShortName).@(navigation.DisplayPropertyName)).Css("grid-column @(Model.ViewDataTypeShortName)GridColumn");
+        @:columns.Add(model => model.@GetValueExpression(navigation)).Titled(Localization.@(Model.ViewDataTypeShortName).@GetValueExpression(navigation)).Css("grid-column @(Model.ViewDataTypeShortName)GridColumn");
             }
         }
         }
@@ -36,17 +36,17 @@
             if (pkName != null)
             {
             <span>
-                <a class='btn btn-success' href='{(Url.Action(Edit, new { id = model.IDDealer }))}'><i class='fa fa-edit' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipEdit}'></i></a>
-                <a class='btn btn-info' href='{(Url.Action(Details, new { id = model.IDDealer }))}'><i class='fa fa-folder-open-o' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipDetails}'></i></a>
-                <a class='btn btn-danger' href='{(Url.Action(Delete, new { id = model.IDDealer }))}'><i class='fa fa-remove' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipDelete}'></i></a>
+                <a class='btn btn-success' href='{(Url.Action(Edit, new { id = model.@pkName }))}'><i class='fa fa-edit' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipEdit}'></i></a>
+                <a class='btn btn-info' href='{(Url.Action(Details, new { id = model.@pkName }))}'><i class='fa fa-folder-open-o' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipDetails}'></i></a>
+                <a class='btn btn-danger' href='{(Url.Action(Delete, new { id = model.@pkName }))}'><i class='fa fa-remove' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipDelete}'></i></a>
             </span>
             }
             else
             {
             <span>
-                <a class='btn btn-success' href='{(Url.Action(Edit, new { /* id = model.IDDealer */ }))}'><i class='fa fa-edit' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipEdit}'></i></a>
-                <a class='btn btn-info' href='{(Url.Action(Details, new { /* id = model.IDDealer */ }))}'><i class='fa fa-folder-open-o' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipDetails}'></i></a>
-                <a class='btn btn-danger' href='{(Url.Action(Delete, new { /* id = model.IDDealer */ }))}'><i class='fa fa-remove' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipDelete}'></i></a>
+                <a class='btn btn-success' href='{(Url.Action(Edit, new { /* id = model.Id */ }))}'><i class='fa fa-edit' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipEdit}'></i></a>
+                <a class='btn btn-info' href='{(Url.Action(Details, new { /* id = model.Id */ }))}'><i class='fa fa-folder-open-o' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipDetails}'></i></a>
+                <a class='btn btn-danger' href='{(Url.Action(Delete, new { /* id = model.Id */ }))}'><i class='fa fa-remove' data-toggle='tooltip' title='{Localization.@(Model.ViewDataTypeShortName).TooltipDelete}'></i></a>
             </span>
             }}"));
     })

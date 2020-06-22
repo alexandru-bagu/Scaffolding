@@ -390,16 +390,29 @@ namespace Localization
         @{
             Dictionary<string, IPropertyMetadata> propertyLookup = ((IModelMetadata)Model.ModelMetadata).Properties.ToDictionary(x => x.PropertyName, x => x);
             Dictionary<string, INavigationMetadata> navigationLookup = ((IModelMetadata)Model.ModelMetadata).Navigations.ToDictionary(x => x.AssociationPropertyName, x => x);
+            HashSet<string> usedNames = new HashSet<string>();
+            foreach (var item in Model.ModelMetadata.Properties)
+            {
+                if(usedNames.Add(GetAssociationName(item)))
+                { 
+                    if (item.IsForeignKey)
+                    {
+        @:public const string @GetAssociationName(item) = "@GetAssociationName(item)";
+                    }
+                    else
+                    {
+        @:public const string @GetAssociationName(item) = "@GetAssociationName(item)";
+                    }
+                }
+            }
             foreach (var item in Model.ModelMetadata.ModelType.GetProperties())
             {
-                if (propertyLookup.TryGetValue(item.Name, out IPropertyMetadata property)
-                    && property.Scaffold && !property.IsForeignKey && !property.IsPrimaryKey)
+                if (navigationLookup.TryGetValue(item.Name, out INavigationMetadata navigation))
                 {
-        @:public const string @GetValueExpression(property) = "@GetValueExpression(property)";
-                }
-                else if (navigationLookup.TryGetValue(item.Name, out INavigationMetadata navigation))
-                {
+                    if (usedNames.Add(GetValueExpression(navigation)))
+                    {
         @:public const string @GetValueExpression(navigation) = "@GetValueExpression(navigation)";
+                    }
                 }
             }
         }
@@ -454,5 +467,11 @@ namespace Localization
     string GetEnumerableTypeExpression(string typeName)
     {
         return "IEnumerable<" + typeName + ">";
+    }
+
+    string GetAssociationName(IPropertyMetadata property)
+    {
+        //Todo: Implement properly.
+        return property.PropertyName;
     }
 }
