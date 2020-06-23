@@ -44,10 +44,26 @@ namespace @Model.ControllerNamespace
         (String.IsNullOrEmpty(entitySetName)
             ? entitySetName
             : (entitySetName.Substring(0, length: 1).ToLowerInvariant() + entitySetName.Substring(1)));
-    var primaryKeyName = Model.ModelMetadata.PrimaryKeys[0].PropertyName;
-    var primaryKeyShortTypeName = Model.ModelMetadata.PrimaryKeys[0].ShortTypeName;
-    var primaryKeyType = Model.ModelMetadata.PrimaryKeys[0].TypeName;
-    var primaryKeyNullableTypeName = GetNullableTypeName(primaryKeyType, primaryKeyShortTypeName);
+    var primaryKeys = Model.ModelMetadata.PrimaryKeys;
+    var primaryKeyName = "";
+    var primaryKeyShortTypeName = "";
+    var primaryKeyType = "";
+    var primaryKeyNullableTypeName = "";
+
+    if (primaryKeys != null)
+    {
+        primaryKeyName = primaryKeys[0].PropertyName;
+        primaryKeyShortTypeName = primaryKeys[0].ShortTypeName;
+        primaryKeyType = primaryKeys[0].TypeName;
+        primaryKeyNullableTypeName = GetNullableTypeName(primaryKeyType, primaryKeyShortTypeName);
+    }
+    else
+    {
+        primaryKeyType = "System.Object";
+        primaryKeyShortTypeName = "Object";
+        primaryKeyNullableTypeName = "System.Object";
+    }
+
     var lambdaVar = Model.ModelVariable[0];
     var relatedProperties = new Dictionary<string, dynamic>();
     foreach (var nav in Model.ModelMetadata.Navigations)
@@ -127,7 +143,10 @@ namespace @Model.ControllerNamespace
                 Log.Debug("End Get::GridView");
             }
         }
-
+        @if(string.IsNullOrWhiteSpace(primaryKeyName))
+        {
+        @:/*
+        }
         // GET: @routePrefix/Details/5
         public async Task<ActionResult> Details(@primaryKeyNullableTypeName id)
         {
@@ -368,6 +387,11 @@ namespace @Model.ControllerNamespace
         private bool @(Model.ModelTypeName)Exists(@primaryKeyShortTypeName id)
         {
             return _context.@(entitySetName).Any(e => e.@primaryKeyName == id);
+        }
+
+        @if(string.IsNullOrWhiteSpace(primaryKeyName))
+        {
+        @:*/
         }
     }
 }

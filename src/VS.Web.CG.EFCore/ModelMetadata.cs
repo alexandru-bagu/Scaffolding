@@ -108,7 +108,8 @@ namespace Microsoft.VisualStudio.Web.CodeGeneration.EntityFrameworkCore
                     var primaryKey = EntityType.FindPrimaryKey();
                     if (primaryKey == null)
                     {
-                        throw new InvalidOperationException(MessageStrings.PrimaryKeyNotFound);
+                        return null;
+                        //throw new InvalidOperationException(MessageStrings.PrimaryKeyNotFound);
                     }
 
                     _primaryKeys = primaryKey
