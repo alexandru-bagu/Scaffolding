@@ -223,14 +223,16 @@ namespace @Model.ControllerNamespace
                     if(__isAjax) return Json(new AjaxSuccessResponse());
                     else return RedirectToAction(nameof(Index));
                 }
-                if(__isAjax) return Json(new AjaxFailureResponse() { Message = Localization.@(Model.ModelMetadata.ModelType.Name).InvalidData } );
     @{
         foreach (var property in relatedProperties.Values)
         {
                 @:ViewData["@(property.ForeignKeyPropertyNames[0])"] = new SelectList(_context.@property.EntitySetName, "@property.PrimaryKeyNames[0]", "@property.DisplayPropertyName", @(Model.ModelVariable).@property.ForeignKeyPropertyNames[0]);
         }
     }
-                return View(@Model.ModelVariable);
+                ViewBag.IsAjaxView = __isAjax;
+                var viewResponse = View(@Model.ModelVariable);
+                if (__isAjax) return Json(new AjaxRenderResponse() { Render = ViewRenderer.Render(ControllerContext, viewResponse) });
+                else return viewResponse;
             }
             catch (Exception ex)
             {
@@ -314,14 +316,16 @@ namespace @Model.ControllerNamespace
                     if(__isAjax) return Json(new AjaxSuccessResponse());
                     else return RedirectToAction(nameof(Index));
                 }
-                if(__isAjax) return Json(new AjaxFailureResponse() { Message = Localization.@(Model.ModelMetadata.ModelType.Name).InvalidData } );
     @{
         foreach (var property in relatedProperties.Values)
         {
                 @:ViewData["@(property.ForeignKeyPropertyNames[0])"] = new SelectList(_context.@property.EntitySetName, "@property.PrimaryKeyNames[0]", "@property.DisplayPropertyName", @(Model.ModelVariable).@property.ForeignKeyPropertyNames[0]);
         }
     }
-                return View(@Model.ModelVariable);
+                ViewBag.IsAjaxView = __isAjax;
+                var viewResponse = View(@Model.ModelVariable);
+                if (__isAjax) return Json(new AjaxRenderResponse() { Render = ViewRenderer.Render(ControllerContext, viewResponse) });
+                else return viewResponse;
             }
             catch (Exception ex)
             {
@@ -420,7 +424,6 @@ namespace Localization
         public const string Edit = "Edit";
         public const string Delete = "Delete";
         public const string NotFound = "Entry could not be found.";
-        public const string InvalidData = "Invalid data was submitted.";
 
         @{
             Dictionary<string, IPropertyMetadata> propertyLookup = ((IModelMetadata)Model.ModelMetadata).Properties.ToDictionary(x => x.PropertyName, x => x);
