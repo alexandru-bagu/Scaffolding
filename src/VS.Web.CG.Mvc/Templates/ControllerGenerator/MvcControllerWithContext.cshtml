@@ -229,9 +229,9 @@ namespace @Model.ControllerNamespace
                 @:ViewData["@(property.ForeignKeyPropertyNames[0])"] = new SelectList(_context.@property.EntitySetName, "@property.PrimaryKeyNames[0]", "@property.DisplayPropertyName", @(Model.ModelVariable).@property.ForeignKeyPropertyNames[0]);
         }
     }
-                ViewBag.IsAjaxView = __isAjax;
+                ViewData["IsAjaxView"] = __isAjax;
                 var viewResponse = View(@Model.ModelVariable);
-                if (__isAjax) return Json(new AjaxRenderResponse() { Render = ViewRenderer.Render(ControllerContext, viewResponse) });
+                if (__isAjax) return Json(new AjaxRenderResponse() { Render = ViewRenderer.Render(ControllerContext, viewResponse, ViewData, TempData) });
                 else return viewResponse;
             }
             catch (Exception ex)
@@ -322,9 +322,9 @@ namespace @Model.ControllerNamespace
                 @:ViewData["@(property.ForeignKeyPropertyNames[0])"] = new SelectList(_context.@property.EntitySetName, "@property.PrimaryKeyNames[0]", "@property.DisplayPropertyName", @(Model.ModelVariable).@property.ForeignKeyPropertyNames[0]);
         }
     }
-                ViewBag.IsAjaxView = __isAjax;
+                ViewData["IsAjaxView"] = __isAjax;
                 var viewResponse = View(@Model.ModelVariable);
-                if (__isAjax) return Json(new AjaxRenderResponse() { Render = ViewRenderer.Render(ControllerContext, viewResponse) });
+                if (__isAjax) return Json(new AjaxRenderResponse() { Render = ViewRenderer.Render(ControllerContext, viewResponse, ViewData, TempData) });
                 else return viewResponse;
             }
             catch (Exception ex)
@@ -423,6 +423,7 @@ namespace Localization
         public const string Details = "Details";
         public const string Edit = "Edit";
         public const string Delete = "Delete";
+        public const string DeletePrompt = "Are you sure you want to delete this entry?";
         public const string NotFound = "Entry could not be found.";
 
         @{

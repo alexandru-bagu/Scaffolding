@@ -6,18 +6,18 @@
 
 <!-- form target initialization -->
 @@{
-    string actionName = ViewBag.ActionName;
+    string actionName = (string)ViewData["ActionName"];
     if(string.IsNullOrEmpty(actionName))
     {
         actionName = "@Model.ViewName";
     }
-    string controllerName = ViewBag.ControllerName;
+    string controllerName = (string)ViewData["ControllerName];
     if(string.IsNullOrEmpty(controllerName))
     {
         controllerName = "@(Model.ControllerName.Substring(0, Model.ControllerName.Length - Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Constants.ControllerSuffix.Length))";
     }
     bool isAjax = false;
-    if(ViewBag.IsAjaxView != null && ViewBag.IsAjaxView is Boolean)
+    if(ViewData["IsAjaxView"] != null && ViewData["IsAjaxView"] is Boolean)
     {
         isAjax = (bool)ViewBag.IsAjaxView;
     }
@@ -92,7 +92,14 @@
     }
     <!-- /.box-header -->
     <div class="box-body">
-        @@using (Html.BeginForm(actionName, controllerName)) 
+        @if (pkName != null)
+        {
+        @:@@using (Html.BeginForm(actionName, controllerName, new { id = Model.@(GetPrimaryKeyName()) })) 
+        }
+        else
+        {
+        @:@@using (Html.BeginForm(actionName, controllerName, new { /* id = Model.Id */ })) 
+        }
         {
             @@Html.AntiForgeryToken()
             @@Html.Hidden("__isAjax", isAjax)
