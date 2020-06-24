@@ -8,13 +8,19 @@
 @@{
     string actionName = ViewBag.ActionName;
     if(string.IsNullOrEmpty(actionName))
+    {
         actionName = "@Model.ViewName";
+    }
     string controllerName = ViewBag.ControllerName;
     if(string.IsNullOrEmpty(controllerName))
+    {
         controllerName = "@(Model.ControllerName.Substring(0, Model.ControllerName.Length - Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Constants.ControllerSuffix.Length))";
+    }
     bool isAjax = false;
     if(ViewBag.IsAjaxView != null && ViewBag.IsAjaxView is Boolean)
+    {
         isAjax = (bool)ViewBag.IsAjaxView;
+    }
 
     if(isAjax)
     {
@@ -22,7 +28,6 @@
     }
 }
 <!-- /form target initialization -->
-
 @{
     if (Model.IsPartialView)
     {
@@ -30,12 +35,16 @@
     else if (Model.IsLayoutPageSelected)
     {
 @:@@{
-    @:ViewData["Title"] = "@Model.ViewName";
+    @:if(!isAjax)
+    @:{
+        @:ViewData["Title"] = "@Model.ViewName";
         if (!string.IsNullOrEmpty(Model.LayoutPageFile))
         {
-    @:Layout = "@Model.LayoutPageFile";
+        @:Layout = "@Model.LayoutPageFile";
         }
+    @:}
 @:}
+@:
 @:
     }
     else
