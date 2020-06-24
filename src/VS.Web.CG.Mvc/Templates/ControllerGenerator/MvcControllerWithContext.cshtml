@@ -92,26 +92,12 @@ namespace @Model.ControllerNamespace
         }
 
         // GET: @routePrefix
-@{
-        @:public async Task<ActionResult> Index()
-        @:{
-            @:try
-            @:{
-                @:Log.Debug("Start Get::Index");
-        var includeExpressions = "";
-        includeExpressions = String.Join("", relatedProperties
-            .Values
-            .Select(property => String.Format(".Include({0} => {0}.{1})", lambdaVar, property.AssociationPropertyName)));
-        if (!String.IsNullOrEmpty(includeExpressions))
+        public ActionResult Index()
         {
-                @:var @entitySetVar = _context.@entitySetName@includeExpressions;
-                @:return View(await @(entitySetVar).ToListAsync());
-        }
-        else
-        {
-                @:return View(await _context.@(entitySetName).ToListAsync());
-        }
-    }
+            try
+            {
+                Log.Debug("Start Get::Index");
+                return View();
             }
             catch (Exception ex)
             {
@@ -131,7 +117,20 @@ namespace @Model.ControllerNamespace
             try
             {
                 Log.Debug("Start Get::GridView");
-                return PartialView("_Grid", _context.@(entitySetName));
+        @{
+            var includeExpressions = String.Join("", relatedProperties
+                .Values
+                .Select(property => String.Format(".Include({0} => {0}.{1})", lambdaVar, property.AssociationPropertyName)));
+            if (!String.IsNullOrEmpty(includeExpressions))
+            {
+                @:var @entitySetVar = _context.@entitySetName@includeExpressions;
+                @:return PartialView("_Grid", @(entitySetVar));
+            }
+            else
+            {
+                @:return PartialView("_Grid", _context.@(entitySetName));
+            }
+        }
             }
             catch (Exception ex)
             {
@@ -206,7 +205,7 @@ namespace @Model.ControllerNamespace
         // POST: @routePrefix/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "@bindString")] @Model.ModelTypeName @Model.ModelVariable)
+        public async Task<ActionResult> Create([Bind(Include = "@bindString")] @Model.ModelTypeName @Model.ModelVariable, bool __isAjax)
         {
             try
             {
@@ -221,8 +220,10 @@ namespace @Model.ControllerNamespace
                     @:_context.Add(@Model.ModelVariable);
                     @:await _context.SaveChangesAsync();
     }
-                    return RedirectToAction(nameof(Index));
+                    if(__isAjax) return Json(new AjaxSuccessResponse());
+                    else return RedirectToAction(nameof(Index));
                 }
+                if(__isAjax) return Json(new AjaxFailureResponse() { Message = Localization.@(Model.ModelMetadata.ModelType.Name).InvalidData } );
     @{
         foreach (var property in relatedProperties.Values)
         {
@@ -234,7 +235,8 @@ namespace @Model.ControllerNamespace
             catch (Exception ex)
             {
                 Log.Error("Error Post::Create", ex);
-                return Error(ex);
+                if(__isAjax) return Json(new AjaxExceptionResponse(ex));
+                else return Error(ex);
             }
             finally
             {
@@ -280,7 +282,7 @@ namespace @Model.ControllerNamespace
         // POST: @routePrefix/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(@primaryKeyShortTypeName id, [Bind(Include = "@bindString")] @Model.ModelTypeName @Model.ModelVariable)
+        public async Task<ActionResult> Edit(@primaryKeyShortTypeName id, [Bind(Include = "@bindString")] @Model.ModelTypeName @Model.ModelVariable, bool __isAjax)
         {
             try
             {
@@ -301,15 +303,18 @@ namespace @Model.ControllerNamespace
                     {
                         if (!@(Model.ModelTypeName)Exists(@Model.ModelVariable.@primaryKeyName))
                         {
-                            return NotFound();
+                            if(__isAjax) return Json(new AjaxFailureResponse() { Message = Localization.@(Model.ModelMetadata.ModelType.Name).NotFound } );
+                            else return NotFound();
                         }
                         else
                         {
                             throw;
                         }
                     }
-                    return RedirectToAction(nameof(Index));
+                    if(__isAjax) return Json(new AjaxSuccessResponse());
+                    else return RedirectToAction(nameof(Index));
                 }
+                if(__isAjax) return Json(new AjaxFailureResponse() { Message = Localization.@(Model.ModelMetadata.ModelType.Name).InvalidData } );
     @{
         foreach (var property in relatedProperties.Values)
         {
@@ -321,7 +326,8 @@ namespace @Model.ControllerNamespace
             catch (Exception ex)
             {
                 Log.Error("Error Post::Edit", ex);
-                return Error(ex);
+                if(__isAjax) return Json(new AjaxExceptionResponse(ex));
+                else return Error(ex);
             }
             finally
             {
@@ -363,7 +369,7 @@ namespace @Model.ControllerNamespace
         // POST: @routePrefix/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(@primaryKeyShortTypeName id)
+        public async Task<ActionResult> DeleteConfirmed(@primaryKeyShortTypeName id, bool __isAjax)
         {
             try
             {
@@ -371,12 +377,14 @@ namespace @Model.ControllerNamespace
                 var @Model.ModelVariable = await _context.@(entitySetName).FindAsync(id);
                 _context.@(entitySetName).Remove(@Model.ModelVariable);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if(__isAjax) return Json(new AjaxSuccessResponse());
+                else return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
                 Log.Error("Error Post::Delete", ex);
-                return Error(ex);
+                if(__isAjax) return Json(new AjaxExceptionResponse(ex));
+                else return Error(ex);
             }
             finally
             {
@@ -411,6 +419,9 @@ namespace Localization
         public const string Details = "Details";
         public const string Edit = "Edit";
         public const string Delete = "Delete";
+        public const string NotFound = "Entry could not be found.";
+        public const string InvalidData = "Invalid data was submitted.";
+
         @{
             Dictionary<string, IPropertyMetadata> propertyLookup = ((IModelMetadata)Model.ModelMetadata).Properties.ToDictionary(x => x.PropertyName, x => x);
             Dictionary<string, INavigationMetadata> navigationLookup = ((IModelMetadata)Model.ModelMetadata).Navigations.ToDictionary(x => x.AssociationPropertyName, x => x);

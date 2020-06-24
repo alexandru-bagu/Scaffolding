@@ -4,6 +4,25 @@
 @using System.Linq
 @@model @Model.ViewDataTypeName
 
+<!-- form target initialization -->
+@@{
+    string actionName = ViewBag.ActionName;
+    if(string.IsNullOrEmpty(actionName))
+        actionName = "@Model.ViewName";
+    string controllerName = ViewBag.ControllerName;
+    if(string.IsNullOrEmpty(controllerName))
+        controllerName = "@(Model.ControllerName.Substring(0, Model.ControllerName.Length - Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Constants.ControllerSuffix.Length))";
+    bool isAjax = false;
+    if(ViewBag.IsAjaxView != null && ViewBag.IsAjaxView is Boolean)
+        isAjax = (bool)ViewBag.IsAjaxView;
+
+    if(isAjax)
+    {
+        Layout = null; //disable layout
+    }
+}
+<!-- /form target initialization -->
+
 @{
     if (Model.IsPartialView)
     {
@@ -39,6 +58,10 @@
 }
 
 <div class="box">
+    @@if(!isAjax)
+    {
+    @@*
+    }
     <div class="box-header with-border">
         <h2 class="box-title">@@Localization.@(Model.ViewDataTypeShortName).Details @@Localization.@(Model.ViewDataTypeShortName).Title</h2>
         <span class="pull-right no-margin">
@@ -63,6 +86,10 @@
         }
         </span>
     </div>
+    @@if(!isAjax)
+    {
+    *@@
+    }
     <!-- /.box-header -->
     <div class="box-body">
         <dl class="row">

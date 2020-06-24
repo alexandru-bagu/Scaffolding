@@ -171,7 +171,8 @@ namespace Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View
                 IsPartialView = viewGeneratorModel.PartialView,
                 ReferenceScriptLibraries = viewGeneratorModel.ReferenceScriptLibraries,
                 ModelMetadata = modelTypeAndContextModel?.ContextProcessingResult?.ModelMetadata,
-                JQueryVersion = "1.10.2" //Todo
+                JQueryVersion = "1.10.2", //Todo
+                ControllerName = viewGeneratorModel.ControllerName
             };
 
             return templateModel;

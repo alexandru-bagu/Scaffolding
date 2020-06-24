@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Microsoft.VisualStudio.Web.CodeGenerators.Mvc
 {
-    internal static class Constants
+    public static class Constants
     {
         public const string ControllerSuffix = "Controller";
         public const string ControllersFolderName = "Controllers";

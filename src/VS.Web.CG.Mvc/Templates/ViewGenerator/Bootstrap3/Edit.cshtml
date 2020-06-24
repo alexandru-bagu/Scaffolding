@@ -4,6 +4,24 @@
 @using System.Linq
 @@model @Model.ViewDataTypeName
 
+<!-- form target initialization -->
+@@{
+    string actionName = ViewBag.ActionName;
+    if(string.IsNullOrEmpty(actionName))
+        actionName = "@Model.ViewName";
+    string controllerName = ViewBag.ControllerName;
+    if(string.IsNullOrEmpty(controllerName))
+        controllerName = "@(Model.ControllerName.Substring(0, Model.ControllerName.Length - Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Constants.ControllerSuffix.Length))";
+    bool isAjax = false;
+    if(ViewBag.IsAjaxView != null && ViewBag.IsAjaxView is Boolean)
+        isAjax = (bool)ViewBag.IsAjaxView;
+
+    if(isAjax)
+    {
+        Layout = null; //disable layout
+    }
+}
+<!-- /form target initialization -->
 @{
     if (Model.IsPartialView)
     {
@@ -18,7 +36,6 @@
         }
 @:}
 @:
-@:<h1>@Model.ViewName</h1>
 @:
     }
     else
@@ -41,23 +58,21 @@
 }
 
 <div class="box">
+    @@if(!isAjax)
+    {
     <div class="box-header with-border">
-        <h3 class="box-title">@@Localization.@(Model.ViewDataTypeShortName).Details @@Localization.@(Model.ViewDataTypeShortName).Title</h3>
+        <h2 class="box-title">@@Localization.@(Model.ViewDataTypeShortName).Edit @@Localization.@(Model.ViewDataTypeShortName).Title</h2>
         <span class="pull-right no-margin">
         @{
             string pkName = GetPrimaryKeyName();
             if (pkName != null)
             {
-            @:<a class="btn btn-success" href="@@Url.Action("Edit", new { id = @@Model.@pkName })">@@Localization.@(Model.ViewDataTypeShortName).Edit</a>
-            @:<sep>|</sep>
             @:<a class="btn btn-danger" href="@@Url.Action("Delete", new { id = @@Model.@pkName })">@@Localization.@(Model.ViewDataTypeShortName).Delete</a>
             @:<sep>|</sep>
             @:<a class="btn btn-success" href="@@Url.Action("Index")">@@Localization.@(Model.ViewDataTypeShortName).Back</a>
             }
             else
             {
-            @:<a class="btn btn-success" href="@@Url.Action("Edit", new { /* id = @@Model.PrimaryKey */ })">@@Localization.@(Model.ViewDataTypeShortName).Edit</a>
-            @:<sep>|</sep>
             @:<a class="btn btn-danger" href="@@Url.Action("Delete", new { /* id = @@Model.PrimaryKey */ })">@@Localization.@(Model.ViewDataTypeShortName).Delete</a>
             @:<sep>|</sep>
             @:<a class="btn btn-success" href="@@Url.Action("Index")">@@Localization.@(Model.ViewDataTypeShortName).Back</a>
@@ -65,44 +80,105 @@
         }
         </span>
     </div>
+    }
     <!-- /.box-header -->
     <div class="box-body">
-        <dl class="row">
-    @{
-        Dictionary<string, IPropertyMetadata> propertyLookup = ((IModelMetadata)Model.ModelMetadata).Properties.ToDictionary(x => x.PropertyName, x => x);
-        Dictionary<string, INavigationMetadata> navigationLookup = ((IModelMetadata)Model.ModelMetadata).Navigations.ToDictionary(x => x.AssociationPropertyName, x => x);
-
-        foreach (var item in Model.ModelMetadata.ModelType.GetProperties())
+        @@using (Html.BeginForm(actionName, controllerName)) 
         {
-            if (propertyLookup.TryGetValue(item.Name, out IPropertyMetadata property)
-                && property.Scaffold && !property.IsForeignKey && !property.IsPrimaryKey)
-            {
-            <dt class = "col-sm-2">
-                @@Localization.@(Model.ViewDataTypeShortName).@GetValueExpression(property)
-            </dt>
-            <dd class = "col-sm-10">
-                @@Html.DisplayFor(model => model.@GetValueExpression(property))
-            </dd>
-            }
-            else if (navigationLookup.TryGetValue(item.Name, out INavigationMetadata navigation))
-            {
-            <dt class = "col-sm-2">
-                @@Localization.@(Model.ViewDataTypeShortName).@GetValueExpression(navigation)
-            </dt>
-            <dd class = "col-sm-10">
-                @@Html.DisplayFor(model => model.@GetValueExpression(navigation).@navigation.DisplayPropertyName)
-            </dd>
-            }
+            @@Html.AntiForgeryToken()
+            @@Html.Hidden("__isAjax", isAjax)
+            <div class="form-horizontal">
+                @@Html.ValidationSummary(true, "", new { @@class = "text-danger" })
+
+                @foreach (var property in Model.ModelMetadata.Properties)
+                {
+                    if (property.IsPrimaryKey)
+                    {
+                    @:@@Html.HiddenFor(model => model.@property.PropertyName)
+                        continue;
+                    }
+
+                    if (property.Scaffold)
+                    {
+                        if (property.IsReadOnly)
+                        {
+                            continue;
+                        }
+
+                        if (property.IsForeignKey)
+                        {
+                @:<div class="form-group">
+                    @:@@Html.LabelFor(model => model.@property.PropertyName, @@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property), htmlAttributes: new { @@class = "control-label" })
+                    @:@@Html.DropDownList("@property.PropertyName", null, htmlAttributes: new { @@class = "form-control" })
+                    @:@@Html.ValidationMessageFor(model => model.@property.PropertyName, "", new { @@class = "text-danger" })
+                @:</div>
+                            continue;
+                        }
+
+                        bool isCheckbox = property.TypeName.Equals("System.Boolean");
+                        if (isCheckbox)
+                        {
+                @:<div class="form-group">
+                    @:<div class="checkbox">
+                        @:<label>
+                            @:@@Html.CheckBoxFor(model => model.@property.PropertyName)
+                            @:@@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property)
+                        @:</label>
+                    @:</div>
+                @:</div>
+                        }
+                        else if (property.IsEnum && !property.IsEnumFlags)
+                        {
+                @:<div class="form-group">
+                    @:@@Html.LabelFor(model => model.@property.PropertyName, @@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property), htmlAttributes: new { @@class = "control-label" })
+                    @:@@Html.EnumDropDownListFor(model => model.@property.PropertyName, htmlAttributes: new { @@class = "form-control" })
+                    @:@@Html.ValidationMessageFor(model => model.@property.PropertyName, "", new { @@class = "text-danger" })
+                @:</div>
+                        }
+                        else if (property.IsMultilineText)
+                        {
+                @:<div class="form-group">
+                    @:@@Html.LabelFor(model => model.@property.PropertyName, @@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property), htmlAttributes: new { @@class = "control-label" })
+                    @:@@Html.TextAreaFor(model => model.@property.PropertyName, new { htmlAttributes = new { @@class = "form-control" } })
+                    @:@@Html.ValidationMessageFor(model => model.@property.PropertyName, "", new { @@class = "text-danger" })
+                @:</div>
+                        }
+                        else
+                        {
+                @:<div class="form-group">
+                    @:@@Html.LabelFor(model => model.@property.PropertyName, @@Localization.@(Model.ViewDataTypeShortName).@GetAssociationName(property), htmlAttributes: new { @@class = "control-label" })
+                    @:@@Html.EditorFor(model => model.@property.PropertyName, new { htmlAttributes = new { @@class = "form-control" } })
+                    @:@@Html.ValidationMessageFor(model => model.@property.PropertyName, "", new { @@class = "text-danger" })
+                @:</div>
+                        }
+                    }
+                    else
+                    {
+                @:@@Html.HiddenFor("@property.PropertyName")
+                        continue;
+                    }
+                }
+
+                <div class="form-group">
+                    <input type="submit" value="@("@Localization."+Model.ViewDataTypeShortName+".Save")" class="btn btn-default" />
+                </div>
+            </div>
         }
-    }
-        </dl>
     </div>
 <!-- /.box-body -->
 </div>
+
+
 @{
+    if (Model.ReferenceScriptLibraries)
+    {
+@:@@section Scripts {
+    @:@@Scripts.Render("~/bundles/jqueryval")
+@:}
+    }
+    // The following code closes the tag used in the case of a view using a layout page and the body and html tags in the case of a regular view page
     if (!Model.IsPartialView && !Model.IsLayoutPageSelected)
     {
-        //ClearIndent();
 @:</body>
 @:</html>
     }
@@ -116,13 +192,20 @@
         : null;
     }
 
+    // Do we need to use this in conjunction with the PrimaryKey check?
+    bool IsPropertyGuid(IPropertyMetadata property)
+    {
+        return string.Equals("System.Guid", property.TypeName, StringComparison.OrdinalIgnoreCase);
+    }
+
     string GetValueExpression(IPropertyMetadata property)
     {
         return property.PropertyName;
     }
 
-    string GetValueExpression(INavigationMetadata navigation)
+    string GetAssociationName(IPropertyMetadata property)
     {
-        return navigation.AssociationPropertyName;
+        //Todo: Implement properly.
+        return property.PropertyName;
     }
 }

@@ -120,7 +120,8 @@ namespace Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Controller
                     Force = controllerGeneratorModel.Force,
                     RelativeFolderPath = viewBaseOutputPath,
                     ReferenceScriptLibraries = controllerGeneratorModel.ReferenceScriptLibraries,
-                    BootstrapVersion = controllerGeneratorModel.BootstrapVersion
+                    BootstrapVersion = controllerGeneratorModel.BootstrapVersion,
+                    ControllerName = controllerGeneratorModel.ControllerName
                 };
 
                 var viewAndTemplateNames = new Dictionary<string, string>();

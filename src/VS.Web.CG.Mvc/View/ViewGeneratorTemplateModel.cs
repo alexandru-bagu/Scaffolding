@@ -25,5 +25,7 @@ namespace Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View
         public IModelMetadata ModelMetadata { get; set; }
 
         public string JQueryVersion { get; set; }
+
+        public string ControllerName { get; set; }
     }
 }

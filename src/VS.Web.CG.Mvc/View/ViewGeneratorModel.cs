@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View
     {
         public string ViewName { get; set; }
 
-        [Argument(Description = "The view template to use, supported view templates: 'Empty|Create|Edit|Delete|Details|List'")]
+        [Argument(Description = "The view template to use, supported view templates: 'Empty|Create|Edit|Delete|Details|List|_Grid'")]
         public string TemplateName { get; set; }
 
         [Option(Name = "partialView", ShortName = "partial", Description = "Generate a partial view, other layout options (-l and -udl) are ignored if this is specified")]
@@ -17,6 +17,9 @@ namespace Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View
 
         [Option(Name = "bootstrapVersion", ShortName = "b", Description = "Specify the bootstrap version. Valid values: '3', '4'. Default is 4.")]
         public string BootstrapVersion { get; set; }
+
+        [Option(Name = "controllerName", ShortName = "cn", Description = "Specify the controller name")]
+        public string ControllerName { get; set; }
 
         public ViewGeneratorModel()
         {
@@ -29,6 +32,7 @@ namespace Microsoft.VisualStudio.Web.CodeGenerators.Mvc.View
             TemplateName = copyFrom.TemplateName;
             PartialView = copyFrom.PartialView;
             BootstrapVersion = copyFrom.BootstrapVersion;
+            ControllerName = copyFrom.ControllerName;
         }
 
         public override CommonCommandLineModel Clone()
