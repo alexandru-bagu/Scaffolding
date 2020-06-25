@@ -147,7 +147,7 @@ namespace @Model.ControllerNamespace
         @:/*
         }
         // GET: @routePrefix/Details/5
-        public async Task<ActionResult> Details(@primaryKeyNullableTypeName id)
+        public async Task<ActionResult> Details(@primaryKeyNullableTypeName id, bool __isAjax = false)
         {
             try
             {
@@ -163,7 +163,8 @@ namespace @Model.ControllerNamespace
                 {
                     return NotFound();
                 }
-
+    
+                ViewData["IsAjaxView"] = __isAjax;
                 return View(@Model.ModelVariable);
             }
             catch (Exception ex)
@@ -178,7 +179,7 @@ namespace @Model.ControllerNamespace
         }
 
         // GET: @routePrefix/Create
-        public ActionResult Create()
+        public ActionResult Create(bool __isAjax = false)
         {
             try
             {
@@ -189,6 +190,7 @@ namespace @Model.ControllerNamespace
                 @:ViewData["@(property.ForeignKeyPropertyNames[0])"] = new SelectList(_context.@property.EntitySetName, "@property.PrimaryKeyNames[0]", "@property.DisplayPropertyName");
         }
     }
+                ViewData["IsAjaxView"] = __isAjax;
                 return View();
             }
             catch (Exception ex)
@@ -247,7 +249,7 @@ namespace @Model.ControllerNamespace
         }
 
         // GET: @routePrefix/Edit/5
-        public async Task<ActionResult> Edit(@primaryKeyNullableTypeName id)
+        public async Task<ActionResult> Edit(@primaryKeyNullableTypeName id, bool __isAjax = false)
         {
             try
             {
@@ -268,6 +270,7 @@ namespace @Model.ControllerNamespace
                 @:ViewData["@(property.ForeignKeyPropertyNames[0])"] = new SelectList(_context.@property.EntitySetName, "@property.PrimaryKeyNames[0]", "@property.DisplayPropertyName", @(Model.ModelVariable).@property.ForeignKeyPropertyNames[0]);
         }
     }
+                ViewData["IsAjaxView"] = __isAjax;
                 return View(@Model.ModelVariable);
             }
             catch (Exception ex)
@@ -340,7 +343,7 @@ namespace @Model.ControllerNamespace
         }
 
         // GET: @routePrefix/Delete/5
-        public async Task<ActionResult> Delete(@primaryKeyNullableTypeName id)
+        public async Task<ActionResult> Delete(@primaryKeyNullableTypeName id, bool __isAjax = false)
         {
             try
             {
@@ -356,7 +359,8 @@ namespace @Model.ControllerNamespace
                 {
                     return NotFound();
                 }
-
+    
+                ViewData["IsAjaxView"] = __isAjax;
                 return View(@Model.ModelVariable);
             }
             catch (Exception ex)
