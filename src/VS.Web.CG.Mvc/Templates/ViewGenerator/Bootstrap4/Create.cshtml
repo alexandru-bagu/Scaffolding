@@ -11,7 +11,7 @@
     {
         actionName = "@Model.ViewName";
     }
-    string controllerName = (string)ViewData["ControllerName];
+    string controllerName = (string)ViewData["ControllerName"];
     if(string.IsNullOrEmpty(controllerName))
     {
         controllerName = "@(Model.ControllerName.Substring(0, Model.ControllerName.Length - Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Constants.ControllerSuffix.Length))";
